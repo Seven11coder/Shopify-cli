@@ -1,0 +1,66 @@
+@font-face {
+  font-family: Lovechild;
+  src: url(https://cdn.shopify.com/s/files/1/0933/8614/6092/files/Lovechild-Regular.woff2?v=1747998976);
+}
+
+@font-face {
+  font-family: aesthet_nova_regular;
+  src: url(https://cdn.shopify.com/s/files/1/0933/8614/6092/files/aesthet_nova_regular.woff?v=1747999358);
+}
+
+h1,h2,h3,h4,h5,h6{
+      font-family: Lovechild!important;
+}
+p,span,a,li{
+   font-family: aesthet_nova_regular!important;
+}
+/*==========  Header style  ==========*/
+header.header{
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+header.header  .header__icons {
+    gap: 20px;
+    padding-right: 2px;
+    padding-top: 4px;
+}
+header.header .header__icon .svg-wrapper {
+    width: 34px;
+    height: 34px;
+}
+.header.header nav ul.list-menu {
+    gap: 8px;
+}
+header.header nav ul li a span, header-menu summary.list-menu__item span {
+    font-size: 23px;
+    font-family: 'Lovechild'!important;
+    line-height: 0;
+}
+header.header nav.header__inline-menu {
+
+    margin-left: 0;
+}
+header.header .header__menu-item .icon-caret {
+    right: 11px;
+}
+
+header.header  summary .icon-caret {
+    height: 12px;
+}
+
+header.header summary.list-menu__item{
+    padding-right: 41px;
+}
+header.header img.header__heading-logo {
+    width: 245px!important;
+}
+header.header {
+    padding-top: 7px;
+}
+
+@media(min-width:749px){
+.page-width {
+    max-width: 1732px;
+}
+}
