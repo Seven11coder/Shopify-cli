@@ -9,6 +9,26 @@
  */
 {
   "sections": {
+    "custom_product_inofrmaiton_dzr8fV": {
+      "type": "custom-product-inofrmaiton",
+      "blocks": {
+        "buy_buttons_MW7cBz": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        }
+      },
+      "block_order": [
+        "buy_buttons_MW7cBz"
+      ],
+      "name": "Nitro Product Showcase",
+      "settings": {
+        "background_color": "#ffffff",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "main": {
       "type": "main-product",
       "blocks": {
@@ -66,6 +86,7 @@
         "description",
         "share"
       ],
+      "disabled": true,
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
@@ -84,6 +105,7 @@
     },
     "related-products": {
       "type": "related-products",
+      "disabled": true,
       "settings": {
         "heading": "You may also like",
         "heading_size": "h2",
@@ -102,6 +124,7 @@
     }
   },
   "order": [
+    "custom_product_inofrmaiton_dzr8fV",
     "main",
     "related-products"
   ]
