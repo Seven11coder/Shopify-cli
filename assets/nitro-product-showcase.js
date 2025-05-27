@@ -1,50 +1,40 @@
-// Add CDN link for Flickity
-const flickityCSS = document.createElement('link');
-flickityCSS.rel = 'stylesheet';
-flickityCSS.href = 'https://unpkg.com/flickity@2/dist/flickity.min.css';
-document.head.appendChild(flickityCSS);
 
-const flickityJS = document.createElement('script');
-flickityJS.src = 'https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js';
-document.head.appendChild(flickityJS);
+// Main initialization
+function initNitro() {
+  if (typeof Flickity === 'undefined') {
+    setTimeout(initNitro, 100);
+    return;
+  }
+  
+  initSliders();
+  initVariants();
+  initPurchaseOptions();
+  initAddToCart();
+}
 
-function initNitroProductSliders(sectionId = null) {
-  const mainSliders = sectionId
-    ? document.querySelectorAll(`[data-section-id="${sectionId}"][data-nitro-main-slider]`)
-    : document.querySelectorAll('[data-nitro-main-slider]');
-
-  const thumbSliders = sectionId
-    ? document.querySelectorAll(`[data-section-id="${sectionId}"][data-nitro-thumb-slider]`)
-    : document.querySelectorAll('[data-nitro-thumb-slider]');
-
-  // Initialize main sliders
-  mainSliders.forEach(slider => {
+// Initialize sliders
+function initSliders() {
+  document.querySelectorAll('[data-nitro-main-slider]').forEach(slider => {
     const existing = Flickity.data(slider);
     if (existing) existing.destroy();
-
-    const flkty = new Flickity(slider, {
+    
+    new Flickity(slider, {
       cellAlign: 'left',
       contain: true,
       pageDots: false,
       prevNextButtons: false,
       draggable: true,
       wrapAround: false,
-      imagesLoaded: true,
+      imagesLoaded: true
     });
-
-    flkty.resize();
-    setTimeout(() => flkty.resize(), 500);
   });
 
-  // Initialize thumb sliders
-  thumbSliders.forEach(slider => {
+  document.querySelectorAll('[data-nitro-thumb-slider]').forEach(slider => {
     const existing = Flickity.data(slider);
     if (existing) existing.destroy();
-
-    const sectionId = slider.dataset.sectionId;
-    const mainSlider = document.querySelector(`[data-section-id="${sectionId}"][data-nitro-main-slider]`);
-
-    const flkty = new Flickity(slider, {
+    
+    const mainSlider = document.querySelector('[data-nitro-main-slider]');
+    new Flickity(slider, {
       asNavFor: mainSlider,
       cellAlign: 'left',
       contain: true,
@@ -52,79 +42,159 @@ function initNitroProductSliders(sectionId = null) {
       prevNextButtons: false,
       draggable: true,
       wrapAround: false,
-      imagesLoaded: true,
+      imagesLoaded: true
     });
-
-    flkty.resize();
-    setTimeout(() => flkty.resize(), 500);
   });
 }
 
-function initNitroEvents(sectionId = null) {
-  const sections = sectionId
-    ? document.querySelectorAll(`[data-section-id="${sectionId}"].nitro-product-showcase`)
-    : document.querySelectorAll('.nitro-product-showcase');
-
-  sections.forEach(section => {
-    // Tabs functionality
-    section.querySelectorAll('.nitro-tab').forEach(tab => {
-      tab.onclick = (e) => {
-        section.querySelectorAll('.nitro-tab').forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        
-        section.querySelectorAll('.nitro-variants-grid').forEach(g => g.classList.add('hidden'));
-        const target = section.querySelector(`#${e.target.dataset.tab}-content`);
-        if (target) target.classList.remove('hidden');
-      };
-    });
-
-    // Variant selection
-    section.querySelectorAll('.nitro-variant-item[data-variant-id]').forEach(item => {
-      item.onclick = () => {
-        section.querySelectorAll('.nitro-variant-item').forEach(v => v.classList.remove('selected'));
-        item.classList.add('selected');
-        
-        const variantId = item.dataset.variantId;
-        const hiddenRadio = section.querySelector(`input[type="radio"][value*="${variantId}"]`);
-        if (hiddenRadio) {
-          hiddenRadio.checked = true;
-          hiddenRadio.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      };
-    });
+// Initialize variant selection
+function initVariants() {
+  // Tab functionality
+  document.querySelectorAll('.nitro-tab').forEach(tab => {
+    tab.onclick = (e) => {
+      document.querySelectorAll('.nitro-tab').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      
+      document.querySelectorAll('.nitro-variants-grid').forEach(g => g.classList.add('hidden'));
+      const target = document.querySelector(`#${e.target.dataset.tab}-content`);
+      if (target) target.classList.remove('hidden');
+    };
   });
+
+  // Variant selection
+  document.querySelectorAll('.nitro-variant-item').forEach(item => {
+    item.onclick = () => {
+      document.querySelectorAll('.nitro-variant-item').forEach(v => v.classList.remove('selected'));
+      item.classList.add('selected');
+      
+      const variantId = item.dataset.variantId;
+      document.getElementById('variant-id').value = variantId;
+      
+      updatePricing();
+    };
+  });
+}
+
+// Initialize purchase options
+function initPurchaseOptions() {
+  document.querySelectorAll('input[name="purchase_type"]').forEach(radio => {
+    radio.onchange = function() {
+      const quantity = this.dataset.quantity;
+      const isSubscription = this.dataset.subscription === 'true';
+      
+      document.getElementById('quantity').value = quantity;
+      document.getElementById('subscription').value = isSubscription ? 'true' : '';
+      document.getElementById('frequency').value = isSubscription ? document.getElementById('delivery-frequency').value : '';
+      
+      updateMainPrice(quantity, isSubscription);
+    };
+  });
+
+  document.getElementById('delivery-frequency').onchange = function() {
+    document.getElementById('frequency').value = this.value;
+  };
+}
+
+// Update pricing
+function updatePricing() {
+  const basePrice = window.productData.price / 100;
+  
+  // Calculate prices for different quantities
+  const price6 = (basePrice / 12) * 6; // Price per can * 6
+  const price12 = basePrice;
+  
+  // One-time purchase prices
+  document.getElementById('onetime-6-price').textContent = `$${price6.toFixed(2)}`;
+  document.getElementById('onetime-12-price').textContent = `$${price12.toFixed(2)}`;
+  
+  // Subscription prices (10% off)
+  document.getElementById('subscription-6-price').textContent = `$${(price6 * 0.9).toFixed(2)}`;
+  document.getElementById('subscription-6-original').textContent = `$${price6.toFixed(2)}`;
+  document.getElementById('subscription-12-price').textContent = `$${(price12 * 0.9).toFixed(2)}`;
+  document.getElementById('subscription-12-original').textContent = `$${price12.toFixed(2)}`;
+  
+  // Update main price based on current selection
+  const selectedOption = document.querySelector('input[name="purchase_type"]:checked');
+  if (selectedOption) {
+    updateMainPrice(selectedOption.dataset.quantity, selectedOption.dataset.subscription === 'true');
+  }
+}
+
+// Update main price display
+function updateMainPrice(quantity, isSubscription) {
+  const basePrice = window.productData.price / 100;
+  const pricePerCan = basePrice / 12;
+  let totalPrice = pricePerCan * quantity;
+  
+  if (isSubscription) {
+    totalPrice *= 0.9; // 10% discount
+  }
+  
+  document.getElementById('main-price').textContent = `$${totalPrice.toFixed(2)}`;
+  document.getElementById('price-note').textContent = `${quantity} Cans`;
+}
+
+// Initialize add to cart
+function initAddToCart() {
+  const form = document.querySelector('[data-product-form]');
+  const btn = document.getElementById('add-to-cart');
+  
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    
+    btn.disabled = true;
+    btn.querySelector('span').textContent = 'Adding...';
+    
+    try {
+      const formData = new FormData(form);
+      const response = await fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        btn.querySelector('span').textContent = 'Added!';
+        btn.style.background = '#28a745';
+        
+        // Update cart count if exists
+        const cartCount = document.querySelector('.cart-count-bubble');
+        if (cartCount) {
+          const cart = await fetch('/cart.js').then(r => r.json());
+          cartCount.textContent = cart.item_count;
+        }
+        
+        setTimeout(() => {
+          btn.querySelector('span').textContent = 'Add to Cart';
+          btn.style.background = '';
+          btn.disabled = false;
+        }, 2000);
+      } else {
+        throw new Error('Failed to add');
+      }
+    } catch (error) {
+      btn.querySelector('span').textContent = 'Error';
+      btn.style.background = '#dc3545';
+      
+      setTimeout(() => {
+        btn.querySelector('span').textContent = 'Add to Cart';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 2000);
+    }
+  };
 }
 
 // Initialize everything
-function initNitroSections(sectionId = null) {
-  // Wait for Flickity to load
-  if (typeof Flickity === 'undefined') {
-    setTimeout(() => initNitroSections(sectionId), 100);
-    return;
-  }
-  
-  initNitroProductSliders(sectionId);
-  initNitroEvents(sectionId);
-}
+document.addEventListener('DOMContentLoaded', initNitro);
 
-// Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => initNitroSections());
-
-// Handle all Shopify section events
+// Handle Shopify theme editor
 ['load', 'unload', 'select', 'deselect', 'reorder'].forEach(event => {
-  document.addEventListener(`shopify:section:${event}`, (e) => {
-    initNitroSections(e.detail.sectionId);
-  });
+  document.addEventListener(`shopify:section:${event}`, initNitro);
 });
 
-// Handle block events
-['select', 'deselect'].forEach(event => {
-  document.addEventListener(`shopify:block:${event}`, (e) => {
-    initNitroSections(e.detail.sectionId);
-  });
-});
+window.addEventListener('resize', initSliders);
 
-// Handle resize
-window.addEventListener('resize', () => {
-  initNitroSections();
-});
+// Initialize pricing on load
+if (window.productData) {
+  setTimeout(updatePricing, 100);
+}

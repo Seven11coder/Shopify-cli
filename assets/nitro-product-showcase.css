@@ -17,20 +17,20 @@
     padding-right: 6px;
     flex: 0 0 55%;
 }
-
 .nitro-main-gallery {
-  margin-bottom: 20px;
-  overflow: hidden;
+    margin-bottom: 26px;
+    overflow: hidden;
 }
-
 .nitro-gallery-cell {
     width: 100%;
+    height: 100%;
  margin-right: 10px;
     padding-top: 100%;
 }
 
 .nitro-gallery-cell img {
     width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
     position: absolute;
@@ -39,37 +39,56 @@
     left: 0;
     bottom: 0;
 }
+.nitro-main-gallery .flickity-viewport {
+  height: 1314.75px !important;
+}
 
+@media (max-width: 1400px) {
+  .nitro-main-gallery .flickity-viewport {
+    height: 70vw !important;
+    max-height: 900px !important;
+  }
+}
+@media (max-width: 900px) {
+  .nitro-main-gallery .flickity-viewport {
+    height: 400px !important;
+  }
+}
 
 
 .nitro-thumb-gallery {
-    max-width: 557px;
+    max-width: 570px;
     margin: 0 auto;
 }
 .nitro-thumb-cell {
-    width: 177px;
+    width: 187px;
+    border-radius: 28px;
     height: 100%;
-    margin-right: 10px;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color .2s;
-}
-.nitro-thumb-gallery 
- .flickity-viewport {
-    min-height: 148px!important;
+    background: #fff;
+    padding: 5px;
+    margin-right: 5px;
 }
 
-.nitro-thumb-cell:hover,
-.nitro-thumb-cell.is-nav-selected {
+.nitro-thumb-cell:hover img,
+.nitro-thumb-cell.is-nav-selected img{
   border-color: #333;
+}
+.nitro-thumb-cell.is-nav-selected {
+    border: 2px solid #fff;
+    padding: 5px;
+    background: #cbcccd;
 }
 
 .nitro-thumb-cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #fff;
+    object-fit: cover;
+    border-radius: 22px;
+    transition: all .3s ease;
+}
+.nitro-thumb-gallery .flickity-viewport {
+    height: 151px!important;
 }
 
 /* Product Info Styles */
@@ -96,26 +115,37 @@
     width: max-content;
     font-weight: 500;
 }
-
+.price-per-can {
+    font-size: 18px;
+    border-radius: 50px;
+    background: #e6ebef;
+    padding: 2px 15px;
+    margin-top: 9px;
+    letter-spacing: 0;
+}
 .nitro-product-description {
     font-size: 21px;
     line-height: 1.4;
     letter-spacing: 0;
     color: #555;
-    margin-bottom: 37px;
+    margin-bottom: 32px;
 }
 
 .nitro-price-section {
-    margin-bottom: 46px;
+    margin-bottom: 38px;
 }
 
 .nitro-price-display {
-  font-size: 2rem !important;
-  font-weight: 700 !important;
+    font-size: 2rem!important;
+    font-weight: 700!important;
+    display: flex;
+    align-items: center;
+    gap: 24px;
 }
 .nitro-price-display span.price-item {
-    font-family: 'Lovechild' !important;
-    font-size: 39px;
+    font-family: Lovechild!important;
+    font-size: 40px;
+    color: #000;
 }
 
 .nitro-stat {
@@ -157,7 +187,7 @@
 }
 .nitro-tabs {
     display: grid;
-    margin-bottom: 20px;
+    margin-bottom: 23px;
     border-radius: 80px;
     background: #d7dcdf;
     padding: 5px;
@@ -184,7 +214,7 @@
 .nitro-variants-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+    gap: 14px;
 }
 
 .nitro-variants-grid.hidden {
@@ -192,14 +222,15 @@
 }
 
 .nitro-variant-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px;
-  border: 2px solid #eee;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    height: 221px;
+    border: 3px solid #eee;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: border-color .2s;
 }
 
 .nitro-variant-item:hover,
@@ -208,11 +239,12 @@
 }
 
 .nitro-variant-item img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 8px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    transform: rotateZ(335deg);
+    margin-bottom: 8px;
 }
 
 .nitro-variant-name {
@@ -353,6 +385,7 @@
 .nitro-progress-fill {
   height: 100%;
   background: #333;
+  display: block!important;
   transition: width 0.3s;
 }
 

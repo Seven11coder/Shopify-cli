@@ -64,3 +64,9 @@ header.header {
     max-width: 1732px;
 }
 }
+
+*:focus-visible {
+    box-shadow: none!important;
+    outline-offset: unset!important;
+    outline: unset!important;
+}

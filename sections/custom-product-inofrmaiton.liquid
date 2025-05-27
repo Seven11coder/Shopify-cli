@@ -1,23 +1,28 @@
 {{ 'nitro-product-showcase.css' | asset_url | stylesheet_tag }}
 
-<section class="nitro-product-showcase" 
-         style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;"
-         data-section-id="{{ section.id }}"
-         data-product-id="{{ product.id }}">
-  
+<section
+  class="nitro-product-showcase"
+  style="background-color: {{ section.settings.background_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ product.id }}">
+
   <div class="nitro-showcase-container">
     <div class="nitro-product-grid">
 
       <!-- Product Gallery -->
       <div class="nitro-gallery-wrapper">
-        <div class="nitro-main-gallery" 
-             data-nitro-main-slider
-             data-section-id="{{ section.id }}">
+        <div
+          class="nitro-main-gallery"
+          data-nitro-main-slider
+          data-section-id="{{ section.id }}">
           {% if product.media.size > 0 %}
             {% for media in product.media limit: 8 %}
               <div class="nitro-gallery-cell">
                 {% if media.media_type == 'image' %}
-                  <img src="{{ media | img_url: 'master' }}" alt="{{ media.alt | escape }}" loading="lazy">
+                  <img
+                    src="{{ media | img_url: 'master' }}"
+                    alt="{{ media.alt | escape }}"
+                    loading="lazy">
                 {% endif %}
               </div>
             {% endfor %}
@@ -28,14 +33,18 @@
           {% endif %}
         </div>
 
-        <div class="nitro-thumb-gallery" 
-             data-nitro-thumb-slider
-             data-section-id="{{ section.id }}">
+        <div
+          class="nitro-thumb-gallery"
+          data-nitro-thumb-slider
+          data-section-id="{{ section.id }}">
           {% if product.media.size > 0 %}
             {% for media in product.media limit: 8 %}
               <div class="nitro-thumb-cell">
                 {% if media.media_type == 'image' %}
-                  <img src="{{ media | img_url: '150x150' }}" alt="{{ media.alt | escape }}" loading="lazy">
+                  <img
+                    src="{{ media | img_url: '150x150' }}"
+                    alt="{{ media.alt | escape }}"
+                    loading="lazy">
                 {% endif %}
               </div>
             {% endfor %}
@@ -53,7 +62,7 @@
       <div class="nitro-product-info">
         <div class="nitro-product-header">
           <h1 class="nitro-product-title">
-            {{ product.title | default: "Nitro Cold Brew: Flat White" }}
+            {{ product.title | default: "Nitro Cold Brew Coffee" }}
           </h1>
           {% if product.metafields.custom.subtitle %}
             <p class="nitro-product-subtitle">{{ product.metafields.custom.subtitle }}</p>
@@ -64,71 +73,77 @@
         </div>
 
         <div class="nitro-price-section">
-          {% render 'price', product: product, use_variant: true, show_badges: true, price_class: 'nitro-price-display' %}
+          <div class="nitro-price-display">
+            <span class="price-item" id="main-price">${{ product.price | divided_by: 100.0 | round: 2 }}</span>
+            <span class="price-per-can" id="price-note">12 Cans</span>
+          </div>
         </div>
 
         {% if product.metafields.custom.caffeine_content or product.metafields.custom.calories %}
-        <div class="nitro-stats-grid">
-          {% if product.metafields.custom.caffeine_content %}
-            <div class="nitro-stat">
-              <span class="nitro-stat-number">{{ product.metafields.custom.caffeine_content }}</span>
-              <span class="nitro-stat-label">Caffeine Content (per can)</span>
-            </div>
-          {% endif %}
-          {% if product.metafields.custom.calories %}
-            <div class="nitro-stat">
-              <span class="nitro-stat-number">{{ product.metafields.custom.calories }}</span>
-              <span class="nitro-stat-label">Calories (per can)</span>
-            </div>
-          {% endif %}
-        </div>
+          <div class="nitro-stats-grid">
+            {% if product.metafields.custom.caffeine_content %}
+              <div class="nitro-stat">
+                <span class="nitro-stat-number">{{ product.metafields.custom.caffeine_content | default: "150 mg" }}</span>
+                <span class="nitro-stat-label">Caffeine Content (per can)</span>
+              </div>
+            {% endif %}
+            {% if product.metafields.custom.calories %}
+              <div class="nitro-stat">
+                <span class="nitro-stat-number">{{ product.metafields.custom.calories | default: "80" }}</span>
+                <span class="nitro-stat-label">Calories (per can)</span>
+              </div>
+            {% endif %}
+          </div>
         {% endif %}
 
         <!-- Variant Selection -->
         <div class="nitro-variant-section">
           <div class="nitro-tabs">
             <button class="nitro-tab active" data-tab="flavors">Our Flavors</button>
-            {% if product.metafields.custom.variety_packs %}
-              <button class="nitro-tab" data-tab="variety">Variety Packs</button>
-            {% endif %}
+            <button class="nitro-tab" data-tab="variety">Variety Packs</button>
           </div>
-          
+
           <div class="nitro-variants-grid" id="flavors-content">
             {% if product.variants.size > 1 %}
-              {% for variant in product.variants limit: 7 %}
-                <div class="nitro-variant-item" 
-                     data-variant-id="{{ variant.id }}"
-                     data-variant-price="{{ variant.price }}"
-                     data-variant-available="{{ variant.available }}">
-                  {% if variant.featured_image %}
-                    <img src="{{ variant.featured_image | img_url: '80x80' }}" alt="{{ variant.title }}">
-                  {% else %}
-                    {{ 'product-1' | placeholder_svg_tag: 'nitro-variant-placeholder' }}
-                  {% endif %}
+              {% for variant in product.variants %}
+                <div
+                  class="nitro-variant-item {% if variant == product.selected_or_first_available_variant %}selected{% endif %}"
+                  data-variant-id="{{ variant.id }}"
+                  data-variant-price="{{ variant.price }}">
+                  <div class="nitro-variant-item-img-cont">
+                    {% if variant.featured_image %}
+                      <img src="{{ variant.featured_image | img_url: 'master' }}" alt="{{ variant.title }}">
+                    {% else %}
+                      <img src="{{ product.featured_image | img_url: 'master' }}" alt="{{ variant.title }}">
+                    {% endif %}
+                    <div class="nitro-variant-item-mask"></div>
+                  </div>
                   <span class="nitro-variant-name">{{ variant.title }}</span>
                 </div>
               {% endfor %}
             {% else %}
-              {% for i in (1..7) %}
-                <div class="nitro-variant-item">
-                  {{ 'product-1' | placeholder_svg_tag: 'nitro-variant-placeholder' }}
-                  <span class="nitro-variant-name">Flavor {{ i }}</span>
-                </div>
-              {% endfor %}
+              <!-- Default flavors if no variants -->
+              <div class="nitro-variant-item selected" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                <img src="{{ product.featured_image | img_url: '80x80' }}" alt="Nitro Flat White">
+                <span class="nitro-variant-name">Nitro Flat White</span>
+              </div>
+              <div class="nitro-variant-item" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                <img src="{{ product.featured_image | img_url: '80x80' }}" alt="Nitro Cafe Latte">
+                <span class="nitro-variant-name">Nitro Cafe Latte</span>
+              </div>
+              <div class="nitro-variant-item" data-variant-id="{{ product.selected_or_first_available_variant.id }}">
+                <img src="{{ product.featured_image | img_url: '80x80' }}" alt="Nitro Caramel Latte">
+                <span class="nitro-variant-name">Nitro Caramel Latte</span>
+              </div>
             {% endif %}
           </div>
 
-          {% if product.metafields.custom.variety_packs %}
           <div class="nitro-variants-grid hidden" id="variety-content">
-            {% assign variety_data = product.metafields.custom.variety_packs | parse_json %}
-            {% for item in variety_data %}
-              <div class="nitro-variant-item">
-                <img src="{{ item.image | img_url: '80x80' }}" alt="{{ item.name }}">
-                <span class="nitro-variant-name">{{ item.name }}</span>
-              </div>
-            {% endfor %}
+            <div class="nitro-variant-item">
+              <img src="{{ product.featured_image | img_url: '80x80' }}" alt="Variety Pack">
+              <span class="nitro-variant-name">Mixed Variety Pack</span>
+            </div>
           </div>
-          {% endif %}
         </div>
 
         <!-- Purchase Options -->
@@ -136,25 +151,60 @@
           <h3 class="nitro-section-title">One Time Purchase</h3>
           <div class="nitro-purchase-options">
             <label class="nitro-option">
-              <input type="radio" name="purchase_type" value="single">
+              <input
+                type="radio"
+                name="purchase_type"
+                value="onetime-6"
+                data-quantity="6"
+                data-subscription="false">
               <span class="nitro-option-content">
-                <span class="nitro-option-price">${{ product.price | money_without_currency }}</span>
+                <span class="nitro-option-price" id="onetime-6-price">$24.95</span>
+                <span class="nitro-option-note">6 Cans</span>
+              </span>
+            </label>
+            <label class="nitro-option">
+              <input
+                type="radio"
+                name="purchase_type"
+                value="onetime-12"
+                data-quantity="12"
+                data-subscription="false"
+                checked>
+              <span class="nitro-option-content">
+                <span class="nitro-option-price" id="onetime-12-price">$46.95</span>
                 <span class="nitro-option-note">12 Cans</span>
               </span>
             </label>
           </div>
 
-          {% if product.metafields.custom.subscription_price %}
           <h3 class="nitro-section-title">
-            Subscribe & Save {{ product.metafields.custom.subscription_discount | default: "10" }}%
+            Subscribe & Save 10%
             <span class="nitro-badge">Most Popular</span>
           </h3>
           <div class="nitro-purchase-options">
             <label class="nitro-option">
-              <input type="radio" name="purchase_type" value="subscription" checked>
+              <input
+                type="radio"
+                name="purchase_type"
+                value="subscription-6"
+                data-quantity="6"
+                data-subscription="true">
               <span class="nitro-option-content">
-                <span class="nitro-option-price">${{ product.metafields.custom.subscription_price }}</span>
-                <span class="nitro-option-original">${{ product.price | money_without_currency }}</span>
+                <span class="nitro-option-price" id="subscription-6-price">$20.95</span>
+                <span class="nitro-option-original" id="subscription-6-original">$24.95</span>
+                <span class="nitro-option-note">6 Cans</span>
+              </span>
+            </label>
+            <label class="nitro-option">
+              <input
+                type="radio"
+                name="purchase_type"
+                value="subscription-12"
+                data-quantity="12"
+                data-subscription="true">
+              <span class="nitro-option-content">
+                <span class="nitro-option-price" id="subscription-12-price">$40.95</span>
+                <span class="nitro-option-original" id="subscription-12-original">$46.95</span>
                 <span class="nitro-option-note">12 Cans</span>
               </span>
             </label>
@@ -162,208 +212,109 @@
 
           <div class="nitro-delivery-info">
             <span>Delivered every 4 weeks</span>
+            <select id="delivery-frequency" style="margin-left: 10px;">
+              <option value="4">4 weeks</option>
+              <option value="6">6 weeks</option>
+              <option value="8">8 weeks</option>
+            </select>
             <div class="nitro-benefits">
               <span>✓ Free shipping</span>
               <span>✓ Cancel anytime</span>
-              <span>✓ Save {{ product.metafields.custom.subscription_discount | default: "10" }}% on Every Delivery</span>
+              <span>✓ Save 10% on Every Delivery</span>
             </div>
           </div>
-          {% endif %}
         </div>
 
-        <!-- Dawn Theme Product Form -->
+        <!-- Product Form -->
         <product-form class="nitro-product-form">
-          {%- assign product_form_installment_id = 'product-form-installment-' | append: section.id -%}
-
-          <div class="product-form">
-            <div class="product-form__errors">
-              <span class="hidden">{{ 'sections.contact_form.error_heading' | t }}</span>
-              <ul class="hidden">
-                <li>
-                  <label for="product-form-installment-{{ section.id }}">
-                    {{ 'products.product.quantity_minimum_message' | t }}
-                  </label>
-                </li>
-              </ul>
-            </div>
-
-            {%- unless product.has_only_default_variant -%}
-              <variant-radios class="no-js-hidden" data-section="{{ section.id }}" data-url="{{ product.url }}">
-                <fieldset class="js product-form__input">
-                  <legend class="form__label">{{ 'products.product.color' | t }}</legend>
-                  {%- for option in product.options_with_values -%}
-                    {%- if option.name == 'Color' or option.name == 'Flavor' -%}
-                      <div class="nitro-hidden-variants">
-                        {%- for value in option.values -%}
-                          <input type="radio" id="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
-                                 name="{{ option.name }}"
-                                 value="{{ value | escape }}"
-                                 form="{{ product_form_id }}"
-                                 {% if option.selected_value == value %}checked{% endif %}>
-                          <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}">
-                            {{ value }}
-                          </label>
-                        {%- endfor -%}
-                      </div>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </fieldset>
-
-                <script type="application/json">
-                  {{ product.variants | json }}
-                </script>
-              </variant-radios>
-            {%- endunless -%}
+          <form
+            action="/cart/add"
+            method="post"
+            enctype="multipart/form-data"
+            class="product-form"
+            data-product-form>
+            <input
+              type="hidden"
+              name="id"
+              value="{{ product.selected_or_first_available_variant.id }}"
+              id="variant-id">
+            <input
+              type="hidden"
+              name="quantity"
+              value="12"
+              id="quantity">
+            <input
+              type="hidden"
+              name="properties[_subscription]"
+              value=""
+              id="subscription">
+            <input
+              type="hidden"
+              name="properties[_frequency]"
+              value=""
+              id="frequency">
 
             <div class="product-form__buttons">
               <button
                 type="submit"
                 name="add"
-                class="btn product-form__cart-submit{% if product.selected_or_first_available_variant.available == false %} disabled{% endif %}"
-                {% if product.selected_or_first_available_variant.available == false %}disabled{% endif %}>
-                <span>
-                  {%- if product.selected_or_first_available_variant.available -%}
-                    {{ 'products.product.add_to_cart' | t }}
-                  {%- else -%}
-                    {{ 'products.product.sold_out' | t }}
-                  {%- endif -%}
-                </span>
-                <div class="loading-overlay__spinner hidden">
-                  <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
-                    <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
-                  </svg>
-                </div>
+                class="btn product-form__cart-submit"
+                id="add-to-cart">
+                <span>Add to Cart</span>
               </button>
-              
-              {%- if block.settings.show_dynamic_checkout -%}
-                {{ form | payment_button }}
-              {%- endif -%}
+              {{ form | payment_button }}
             </div>
-          </div>
+          </form>
         </product-form>
-
-        <!-- Product Details -->
-        <div class="nitro-details-section">
-          {% if product.metafields.custom.taste_caffeine or product.metafields.custom.taste_boldness or product.metafields.custom.taste_sweetness %}
-          <div class="nitro-detail-block">
-            <h4>Taste</h4>
-            {% if product.metafields.custom.taste_caffeine %}
-            <div class="nitro-taste-item">
-              <span>Caffeine Level</span>
-              <div class="nitro-progress-bar">
-                <div class="nitro-progress-fill" style="width: {{ product.metafields.custom.taste_caffeine }}%"></div>
-              </div>
-            </div>
-            {% endif %}
-            {% if product.metafields.custom.taste_boldness %}
-            <div class="nitro-taste-item">
-              <span>Boldness</span>
-              <div class="nitro-progress-bar">
-                <div class="nitro-progress-fill" style="width: {{ product.metafields.custom.taste_boldness }}%"></div>
-              </div>
-            </div>
-            {% endif %}
-            {% if product.metafields.custom.taste_sweetness %}
-            <div class="nitro-taste-item">
-              <span>Sweetness</span>
-              <div class="nitro-progress-bar">
-                <div class="nitro-progress-fill" style="width: {{ product.metafields.custom.taste_sweetness }}%"></div>
-              </div>
-            </div>
-            {% endif %}
-          </div>
-          {% endif %}
-
-          {% if product.metafields.custom.aroma_notes %}
-          <div class="nitro-detail-block">
-            <h4>Aroma</h4>
-            <p>{{ product.metafields.custom.aroma_notes }}</p>
-          </div>
-          {% endif %}
-
-          {% if product.metafields.custom.appearance_desc %}
-          <div class="nitro-detail-block">
-            <h4>Appearance</h4>
-            <p>{{ product.metafields.custom.appearance_desc }}</p>
-          </div>
-          {% endif %}
-
-          {% if product.metafields.custom.mouth_feel %}
-          <div class="nitro-detail-block">
-            <h4>Mouth Feel</h4>
-            <p>{{ product.metafields.custom.mouth_feel }}</p>
-          </div>
-          {% endif %}
-
-          {% if product.metafields.custom.food_pairing %}
-          <div class="nitro-detail-block">
-            <h4>Food Pairing</h4>
-            <p>{{ product.metafields.custom.food_pairing }}</p>
-          </div>
-          {% endif %}
-        </div>
       </div>
     </div>
   </div>
 </section>
 
+<script>
+  window.productData = {
+    id: {{ product.id }},
+    price: {{ product.price }},
+    variants: {{ product.variants | json }},
+    selectedVariant: {{ product.selected_or_first_available_variant.id }}
+  };
+</script>
+
 <script src="{{ 'nitro-product-showcase.js' | asset_url }}" defer></script>
 
 {% schema %}
-{
-  "name": "Nitro Product Showcase",
-  "settings": [
-    {
-      "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Top Padding",
-      "default": 40
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Bottom Padding",
-      "default": 40
-    }
-  ],
-  "blocks": [
-    {
-      "type": "buy_buttons",
-      "name": "Buy buttons",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "checkbox",
-          "id": "show_dynamic_checkout",
-          "default": true,
-          "label": "Show dynamic checkout buttons"
-        }
-      ]
-    }
-  ],
-  "presets": [
-    {
-      "name": "Nitro Product Showcase",
-      "blocks": [
-        {
-          "type": "buy_buttons"
-        }
-      ]
-    }
-  ]
-}
+  {
+    "name": "Nitro Product Showcase",
+    "settings": [
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background Color",
+        "default": "#ffffff"
+      }, {
+        "type": "range",
+        "id": "padding_top",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Top Padding",
+        "default": 40
+      }, {
+        "type": "range",
+        "id": "padding_bottom",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Bottom Padding",
+        "default": 40
+      }
+    ],
+    "presets": [
+      {
+        "name": "Nitro Product Showcase"
+      }
+    ]
+  }
 {% endschema %}
